@@ -6,12 +6,11 @@ import com.sample.reddit.model.Result
 import javax.inject.Inject
 
 interface RedditRepository {
-    suspend fun getSubreddit(subreddit: String): Result<ApiResponse>
+    suspend fun getSubreddit(params: RequestParams): Result<ApiResponse>
 }
 
 class RedditRepositoryImpl @Inject constructor(val apiService: RedditService) : RedditRepository {
-    override suspend fun getSubreddit(subreddit: String): Result<ApiResponse> {
-        val params = RequestParams(limit = 50, after = null)
+    override suspend fun getSubreddit(params: RequestParams): Result<ApiResponse> {
         return try {
             Result.Success(apiService.requestSubreddit(params.limit,  params.after))
         } catch (e: Exception) {
