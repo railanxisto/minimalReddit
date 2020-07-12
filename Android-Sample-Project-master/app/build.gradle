@@ -54,9 +54,15 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
     kapt 'com.google.dagger:dagger-compiler:2.28'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // interceptor
+    implementation("com.squareup.okhttp3:logging-interceptor:4.3.1")
+
+    //moshi
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.9.3'
 
 }
