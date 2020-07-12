@@ -21,5 +21,6 @@ data class DataChildren(
 data class Topic(
     val id: String,
     val title: String?,
+    val thumbnail: String?,
     @Json(name="num_comments") val comments: Int = 0
 ) : Serializable
