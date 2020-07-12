@@ -4,8 +4,10 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -15,6 +17,12 @@ class ApiModule {
     fun providesOkHttpClient(): OkHttpClient {
         return OkHttpClient
             .Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(1, TimeUnit.MINUTES)
+            .writeTimeout(1, TimeUnit.MINUTES)
             .build()
     }
 
@@ -38,7 +46,7 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun providesService(retrofit: Retrofit): RedditRepository {
-        return retrofit.create(RedditRepository::class.java)
+    fun providesService(retrofit: Retrofit): RedditService {
+        return retrofit.create(RedditService::class.java)
     }
 }
