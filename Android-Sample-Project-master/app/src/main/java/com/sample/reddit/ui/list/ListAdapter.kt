@@ -1,8 +1,9 @@
-package com.sample.reddit.ui.main.list
+package com.sample.reddit.ui.list
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import com.sample.reddit.R
@@ -11,19 +12,19 @@ import com.sample.reddit.model.Topic
 import kotlinx.android.synthetic.main.item_topic_recyclerview.view.*
 
 class ListAdapter(
-    val listener: TopicClickListener
-) : RecyclerView.Adapter<ListAdapter.FactsViewHolder>() {
+    private val listener: TopicClickListener
+) : RecyclerView.Adapter<ListAdapter.TopicsViewHolder>() {
 
     private val topics = mutableListOf<DataChildren>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FactsViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopicsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_topic_recyclerview, parent, false)
-        return FactsViewHolder(view)
+        return TopicsViewHolder(view)
     }
 
     override fun getItemCount(): Int = topics.size
 
-    override fun onBindViewHolder(holder: FactsViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TopicsViewHolder, position: Int) {
         topics[position].run {
             holder.setTopic(this.topic!!)
             holder.setShareButtonClickListener {
@@ -32,15 +33,20 @@ class ListAdapter(
         }
     }
 
-    fun updateTopics(factsList: List<DataChildren>) {
+    fun updateTopics(topicsList: List<DataChildren>) {
         topics.clear()
-        topics.addAll(factsList)
+        topics.addAll(topicsList)
         notifyDataSetChanged()
     }
 
-    inner class FactsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class TopicsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun setTopic(topic: Topic) {
-            itemView.topicImageView.load(topic.thumbnail)
+            if (topic.thumbnail == EMPTY_THUMBNAIL) {
+                itemView.topicImageView.isVisible = false
+            } else {
+                itemView.topicImageView.isVisible = true
+                itemView.topicImageView.load(topic.thumbnail)
+            }
             itemView.titleTextView.text = topic.title
             itemView.commentsTextView.text = "${topic.comments.toString()} comments"
         }
@@ -54,5 +60,9 @@ class ListAdapter(
 
     interface TopicClickListener {
         fun onTopicClick()
+    }
+
+    companion object {
+        private const val EMPTY_THUMBNAIL = "self"
     }
 }

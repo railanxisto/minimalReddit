@@ -1,4 +1,4 @@
-package com.sample.reddit.ui.main
+package com.sample.reddit.ui.details
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.sample.reddit.databinding.DetailFragmentBinding
+import com.sample.reddit.ui.main.MainViewModel
 
 class DetailFragment : Fragment() {
     private var _binding: DetailFragmentBinding? = null
