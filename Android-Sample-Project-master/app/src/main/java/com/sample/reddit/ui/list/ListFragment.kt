@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sample.reddit.databinding.ListFragmentBinding
 import com.sample.reddit.model.ApiResponse
 import com.sample.reddit.model.RequestParams
 import com.sample.reddit.model.Result
+import com.sample.reddit.model.Topic
 import com.sample.reddit.ui.main.MainViewModel
 import com.sample.reddit.utils.*
 import kotlinx.android.synthetic.main.list_fragment.*
@@ -47,7 +49,7 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
     }
 
     private fun request(params: RequestParams) {
-        viewModel.requestArticles(params).onEach{}
+        viewModel.requestArticles(params)
             .collectIn(lifecycleScope) { event ->
                 when (event) {
                     is Start -> showLoading(true)
@@ -98,8 +100,9 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         _binding = null
     }
 
-    override fun onTopicClick() {
-        TODO("Not yet implemented")
+    override fun onTopicClick(topic: Topic) {
+        val action = ListFragmentDirections.actionListFragmentToDetailFragment(topic)
+        view?.findNavController()?.navigate(action)
     }
 
     fun isBottom(dy: Int, layoutManager: LinearLayoutManager): Boolean {

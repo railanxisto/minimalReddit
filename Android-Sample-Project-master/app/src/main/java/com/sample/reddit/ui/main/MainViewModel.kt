@@ -3,6 +3,7 @@ package com.sample.reddit.ui.main
 import androidx.lifecycle.ViewModel
 import com.sample.reddit.api.RedditRepository
 import com.sample.reddit.model.ApiResponse
+import com.sample.reddit.model.CommentsResponse
 import com.sample.reddit.model.RequestParams
 import kotlinx.coroutines.Dispatchers
 import com.sample.reddit.model.Result
@@ -22,6 +23,9 @@ class MainViewModel @Inject constructor(
             redditRepository.getSubreddit(params)
         }
 
-    fun requestMoreArticles() =
-        requestArticles(RequestParams(after = after))
+    fun requestComments(id: String): Flow<StateMachineEvent<Result<List<CommentsResponse>>>> =
+        StateMachine(Dispatchers.IO) {
+            redditRepository.getComments(id)
+        }
+
 }

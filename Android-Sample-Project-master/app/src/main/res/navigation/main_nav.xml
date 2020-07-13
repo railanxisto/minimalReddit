@@ -9,7 +9,12 @@
         android:id="@+id/detailFragment"
         android:name="com.sample.reddit.ui.details.DetailFragment"
         android:label="detail_fragment"
-        tools:layout="@layout/detail_fragment" />
+        tools:layout="@layout/detail_fragment" >
+        <argument
+            android:name="topic"
+            app:argType="com.sample.reddit.model.Topic" />
+
+    </fragment>
     <fragment
         android:id="@+id/listFragment"
         android:name="com.sample.reddit.ui.list.ListFragment"

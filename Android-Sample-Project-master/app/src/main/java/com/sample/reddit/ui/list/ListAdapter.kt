@@ -28,7 +28,7 @@ class ListAdapter(
         topics[position].run {
             holder.setTopic(this.topic!!)
             holder.setShareButtonClickListener {
-                listener.onTopicClick()
+                listener.onTopicClick(this.topic)
             }
         }
     }
@@ -58,7 +58,7 @@ class ListAdapter(
     }
 
     interface TopicClickListener {
-        fun onTopicClick()
+        fun onTopicClick(topic: Topic)
     }
 
     companion object {

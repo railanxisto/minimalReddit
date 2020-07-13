@@ -1,7 +1,8 @@
 package com.sample.reddit.model
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
-import java.io.Serializable
+import kotlinx.android.parcel.Parcelize
 
 data class ApiResponse(
     val kind: String?,
@@ -18,9 +19,10 @@ data class DataChildren(
     @Json(name="data") val topic: Topic?
 )
 
+@Parcelize
 data class Topic(
     val id: String,
     val title: String?,
     val thumbnail: String?,
     @Json(name="num_comments") val comments: Int = 0
-) : Serializable
+) : Parcelable
