@@ -25,9 +25,8 @@ class MainViewModel @Inject constructor(
     var after: String? = null
     @ExperimentalCoroutinesApi
     private val _state = MutableStateFlow<Result<ApiResponse>>(
-        Result.Loading
+        Result.Loading(true)
     )
-
 
     @ExperimentalCoroutinesApi
     val state: StateFlow<Result<ApiResponse>> get() = _state
@@ -38,7 +37,7 @@ class MainViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     fun requestArticles(params: RequestParams = RequestParams()) {
         viewModelScope.launch {
-            _state.value = Result.Loading
+            _state.value = Result.Loading(true)
             _state.value = withContext(Dispatchers.IO) {
                 redditRepository.getSubreddit(params)
             }

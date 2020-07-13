@@ -6,7 +6,7 @@ sealed class Result<out R> {
 
     data class Error(val error: Exception) : Result<Nothing>()
 
-    object Loading: Result<Nothing>()
+    data class Loading(val loading: Boolean): Result<Nothing>()
 
     override fun toString(): String {
         return when (this) {

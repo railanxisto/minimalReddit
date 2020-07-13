@@ -36,21 +36,23 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.requestArticles()
-        setupAdapter()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState == null)
+            viewModel.requestArticles()
         lifecycleScope.launch {
             viewModel.state.collect { state ->
                 when (state) {
-                    is Result.Loading -> showLoading(true)
+                    is Result.Loading -> showLoading(state.loading)
                     is Result.Success -> showSuccess(state.content)
                     is Result.Error -> showError(state.error)
                 }
             }
         }
+        setupAdapter()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
     private fun setupAdapter() {
