@@ -1,4 +1,4 @@
-package com.sample.reddit.ui.main
+package com.sample.reddit.ui.details
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,11 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.sample.reddit.databinding.ListFragmentBinding
+import com.sample.reddit.databinding.DetailFragmentBinding
+import com.sample.reddit.ui.main.MainViewModel
 
-class ListFragment : Fragment() {
-    private var _binding: ListFragmentBinding? = null
-    private val binding: ListFragmentBinding
+class DetailFragment : Fragment() {
+    private var _binding: DetailFragmentBinding? = null
+    private val binding: DetailFragmentBinding
         get() = _binding!!
 
     private val viewModel: MainViewModel by activityViewModels()
@@ -19,7 +20,7 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = ListFragmentBinding.inflate(layoutInflater)
+        _binding = DetailFragmentBinding.inflate(layoutInflater)
         return binding.root
     }
 
