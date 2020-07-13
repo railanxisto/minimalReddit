@@ -15,8 +15,13 @@ class MainViewModel @Inject constructor(
     private val redditRepository: RedditRepository
 ) : ViewModel() {
 
+    var after: String? = null
+
     fun requestArticles(params: RequestParams): Flow<StateMachineEvent<Result<ApiResponse>>> =
         StateMachine(Dispatchers.IO) {
             redditRepository.getSubreddit(params)
         }
+
+    fun requestMoreArticles() =
+        requestArticles(RequestParams(after = after))
 }

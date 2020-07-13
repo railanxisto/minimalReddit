@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.sample.reddit.databinding.ListFragmentBinding
 import com.sample.reddit.model.ApiResponse
 import com.sample.reddit.model.RequestParams
@@ -16,6 +17,7 @@ import com.sample.reddit.model.Result
 import com.sample.reddit.ui.main.MainViewModel
 import com.sample.reddit.utils.*
 import kotlinx.android.synthetic.main.list_fragment.*
+import kotlinx.coroutines.flow.onEach
 
 class ListFragment : Fragment(), ListAdapter.TopicClickListener {
     private var _binding: ListFragmentBinding? = null
@@ -24,6 +26,7 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
 
     private val viewModel: MainViewModel by activityViewModels()
     private val adapter = ListAdapter(this)
+    private var after: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,9 +43,12 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.requestArticles(RequestParams())
-            .collectIn(lifecycleScope) {
-                    event ->
+        request(RequestParams())
+    }
+
+    private fun request(params: RequestParams) {
+        viewModel.requestArticles(params).onEach{}
+            .collectIn(lifecycleScope) { event ->
                 when (event) {
                     is Start -> showLoading(true)
                     is Success -> showSuccess(event.value)
@@ -56,6 +62,14 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         val layoutManager = LinearLayoutManager(activity)
         topicsRecyclerView.layoutManager = layoutManager
         topicsRecyclerView.adapter = adapter
+        topicsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (isBottom(dy, layoutManager)) {
+                    request(RequestParams(after = after))
+                }
+            }
+        })
     }
 
     private fun showError(exception: Throwable) {
@@ -66,6 +80,7 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
     private fun showSuccess(result: Result<ApiResponse>) {
         when (result) {
             is Result.Success -> {
+                after = result.content.data?.after
                 adapter.updateTopics(result.content.data?.children!!)
             }
             is Result.Error -> {
@@ -85,5 +100,15 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
 
     override fun onTopicClick() {
         TODO("Not yet implemented")
+    }
+
+    fun isBottom(dy: Int, layoutManager: LinearLayoutManager): Boolean {
+        var isEndless = false
+        if (dy > 0) {
+            if (layoutManager.childCount + layoutManager.findFirstVisibleItemPosition() >= layoutManager.itemCount) {
+                isEndless = true
+            }
+        }
+        return isEndless
     }
 }
