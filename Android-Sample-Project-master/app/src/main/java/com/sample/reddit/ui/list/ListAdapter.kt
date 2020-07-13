@@ -33,6 +33,12 @@ class ListAdapter(
         }
     }
 
+    fun setTopics(topicsList: List<DataChildren>) {
+        topics.clear()
+        topics.addAll(topicsList)
+        notifyDataSetChanged()
+    }
+
     fun updateTopics(topicsList: List<DataChildren>) {
         topics.addAll(topicsList)
         notifyDataSetChanged()
