@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Reddit</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="error_no_connection">Device has no Connection</string>
+    <string name="error_app">Some app error occurred</string>
+    <string name="error_server">Some server error occurred</string>
+    <string name="error_unknown">An unexpected error ocurred</string>
+    <string name="error_network">Network problem. Check your conectivity and try again!</string>
 </resources>

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.sample.reddit.MainApplication
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -14,7 +15,9 @@ class MainModule(private val application: MainApplication) {
     @Provides
     @Singleton
     fun providesMoshi(): Moshi {
-        return Moshi.Builder().build()
+        return Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
     }
 
     @Provides

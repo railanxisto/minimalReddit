@@ -1,14 +1,14 @@
-package com.sample.reddit
+package com.sample.reddit.ui.main
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.sample.reddit.R
 import com.sample.reddit.databinding.MainActivityBinding
 import com.sample.reddit.di.ComponentProvider
 import com.sample.reddit.di.DaggerViewModelFactory
-import com.sample.reddit.ui.main.MainViewModel
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -27,6 +27,8 @@ class MainActivity : AppCompatActivity() {
         (applicationContext as ComponentProvider).appComponent().inject(this)
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
-        navController = Navigation.findNavController(this, R.id.nav_controller)
+        navController = Navigation.findNavController(this,
+            R.id.nav_controller
+        )
     }
 }
