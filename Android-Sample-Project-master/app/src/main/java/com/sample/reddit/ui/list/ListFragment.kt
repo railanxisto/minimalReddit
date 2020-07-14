@@ -25,9 +25,8 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
 
     private val viewModel: MainViewModel by activityViewModels()
     private val adapter = ListAdapter(this)
-    private val layoutManager = LinearLayoutManager(activity)
     private val endlessScroll by lazy {
-        EndlessRecyclerViewScrollListener(layoutManager) {
+        EndlessRecyclerViewScrollListener(binding.topicsRecyclerView.layoutManager as LinearLayoutManager) {
             binding.progressBar.isVisible = true
             viewModel.requestMoreTopics()
         }
@@ -81,7 +80,7 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
     }
 
     private fun setupAdapter() {
-        binding.topicsRecyclerView.layoutManager = layoutManager
+        binding.topicsRecyclerView.layoutManager = LinearLayoutManager(activity)
         binding.topicsRecyclerView.adapter = adapter
         binding.topicsRecyclerView.addOnScrollListener(endlessScroll)
     }
