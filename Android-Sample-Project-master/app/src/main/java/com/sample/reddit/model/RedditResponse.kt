@@ -16,7 +16,7 @@ data class Data(
 )
 
 data class DataChildren(
-    @Json(name="data") val topic: Topic?
+    @Json(name = "data") val topic: Topic?
 )
 
 @Parcelize
@@ -24,5 +24,5 @@ data class Topic(
     val id: String,
     val title: String?,
     val thumbnail: String?,
-    @Json(name="num_comments") val comments: Int = 0
+    @Json(name = "num_comments") val comments: Int = 0
 ) : Parcelable

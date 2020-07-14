@@ -15,7 +15,7 @@ data class DataComments(
 )
 
 data class DataChildrenComments(
-    @Json(name="data") val comment: Comment?
+    @Json(name = "data") val comment: Comment?
 )
 
 data class Comment(
@@ -24,5 +24,5 @@ data class Comment(
     val body: String?,
     val author: String? = null,
     val score: Int = 0,
-    @Json(name="url_overridden_by_dest") val image: String? = null
+    @Json(name = "url_overridden_by_dest") val image: String? = null
 ) : Serializable

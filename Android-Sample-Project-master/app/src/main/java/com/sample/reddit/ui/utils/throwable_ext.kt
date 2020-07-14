@@ -17,4 +17,3 @@ fun Throwable.getRestErrorMessage(): String =
             "Network problem. Check your conectivity and try again!"
         else -> "An unexpected error ocurred"
     }
-

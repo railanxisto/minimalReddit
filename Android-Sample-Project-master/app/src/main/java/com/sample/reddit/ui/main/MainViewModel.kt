@@ -9,9 +9,13 @@ import com.sample.reddit.model.DataChildren
 import com.sample.reddit.model.RequestParams
 import com.sample.reddit.model.Result
 import com.sample.reddit.ui.utils.getRestErrorMessage
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
@@ -34,7 +38,8 @@ class MainViewModel @Inject constructor(
     )
 
     @ExperimentalCoroutinesApi
-    val state: StateFlow<Result<List<CommentsResponse>>> get() = _state
+    val state: StateFlow<Result<List<CommentsResponse>>>
+        get() = _state
 
     fun requestTopics() {
         loading.value = true
@@ -49,7 +54,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun requestTopicsFromApi(params: RequestParams, onSuccess: (List<DataChildren>) -> Unit) {
+    private fun requestTopicsFromApi(
+        params: RequestParams,
+        onSuccess: (List<DataChildren>) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = redditRepository.getSubreddit(params)
             when (result) {
@@ -83,5 +91,4 @@ class MainViewModel @Inject constructor(
     fun getMoreTopics() = requestMoreTopics
 
     fun getError() = errorMessage
-
 }

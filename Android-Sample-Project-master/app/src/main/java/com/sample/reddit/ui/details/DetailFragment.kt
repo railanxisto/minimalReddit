@@ -24,7 +24,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-
 class DetailFragment : BaseFragment() {
     private var _binding: DetailFragmentBinding? = null
     private val binding: DetailFragmentBinding
@@ -34,7 +33,8 @@ class DetailFragment : BaseFragment() {
     private val adapter = CommentsAdapter()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = DetailFragmentBinding.inflate(layoutInflater)
@@ -47,7 +47,7 @@ class DetailFragment : BaseFragment() {
         setupAdapter()
 
         val topic = arguments?.getParcelable<Topic>("topic")!!
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             if (requireContext().isConnected()) {
                 viewModel.requestComments(topic.id)
             } else {

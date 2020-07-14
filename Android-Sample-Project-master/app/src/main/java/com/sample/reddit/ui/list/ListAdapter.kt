@@ -18,7 +18,8 @@ class ListAdapter(
     private val topics = mutableListOf<DataChildren>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopicsViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_topic_recyclerview, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_topic_recyclerview, parent, false)
         return TopicsViewHolder(view)
     }
 
@@ -54,7 +55,7 @@ class ListAdapter(
             }
             itemView.titleTextView.text = topic.title
             // TODO: Use resources.string
-            itemView.commentsTextView.text = "${topic.comments.toString()} comments"
+            itemView.commentsTextView.text = "${topic.comments} comments"
         }
 
         fun setTopiButtonClickListener(clickListener: () -> Unit) {
