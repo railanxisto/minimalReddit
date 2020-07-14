@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -17,13 +16,16 @@ import com.sample.reddit.model.DataChildrenComments
 import com.sample.reddit.model.Result
 import com.sample.reddit.model.Topic
 import com.sample.reddit.ui.main.MainViewModel
-import com.sample.reddit.utils.*
+import com.sample.reddit.ui.utils.BaseFragment
+import com.sample.reddit.ui.utils.getRestErrorMessage
+import com.sample.reddit.ui.utils.isConnected
 import kotlinx.android.synthetic.main.detail_fragment.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
-class DetailFragment : Fragment() {
+class DetailFragment : BaseFragment() {
     private var _binding: DetailFragmentBinding? = null
     private val binding: DetailFragmentBinding
         get() = _binding!!
@@ -39,18 +41,25 @@ class DetailFragment : Fragment() {
         return binding.root
     }
 
+    @ExperimentalCoroutinesApi
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupAdapter()
 
         val topic = arguments?.getParcelable<Topic>("topic")!!
-        if (savedInstanceState == null)
-            viewModel.requestComments(topic.id)
+        if (savedInstanceState == null){
+            if (requireContext().isConnected()) {
+                viewModel.requestComments(topic.id)
+            } else {
+                showSnackbar("No Connection")
+            }
+        }
+
         lifecycleScope.launch {
             viewModel.state.collect() { state ->
                 when (state) {
                     is Result.Loading -> showLoading(true)
-                    is Result.Success -> showSuccess(state)
+                    is Result.Success -> showSuccess(state.content)
                     is Result.Error -> showError(state.error)
                 }
             }
@@ -68,26 +77,19 @@ class DetailFragment : Fragment() {
         binding.commentsRecyclerView.addItemDecoration(dividerItemDecoration)
     }
 
-    private fun showError(exception: Throwable) {
-        // TODO: implement error
-        println("error")
+    private fun showError(error: Throwable) {
+        showLoading(false)
+        showToast(error.getRestErrorMessage())
     }
 
-    private fun showSuccess(result: Result<List<CommentsResponse>>) {
-        when (result) {
-            is Result.Success -> {
-                val topic = result.content.first().data?.children?.first()
-                val list = result.content[1].data?.children
-                showTopic(topic)
-                list?.let {
-                    adapter.setComments(it)
-                }
-                showLoading(false)
-            }
-            is Result.Error -> {
-                showError(result.error)
-            }
+    private fun showSuccess(result: List<CommentsResponse>) {
+        val topic = result.first().data?.children?.first()
+        val list = result[1].data?.children
+        showTopic(topic)
+        list?.let {
+            adapter.setComments(it)
         }
+        showLoading(false)
     }
 
     private fun showTopic(topic: DataChildrenComments?) {

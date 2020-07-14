@@ -1,7 +1,6 @@
 package com.sample.reddit.ui.list
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sample.reddit.databinding.ListFragmentBinding
 import com.sample.reddit.model.*
 import com.sample.reddit.ui.main.MainViewModel
+import com.sample.reddit.ui.utils.BaseFragment
+import com.sample.reddit.ui.utils.isConnected
+import kotlinx.android.synthetic.main.list_fragment.*
 
-class ListFragment : Fragment(), ListAdapter.TopicClickListener {
+class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
     private var _binding: ListFragmentBinding? = null
     private val binding: ListFragmentBinding
         get() = _binding!!
@@ -36,8 +38,13 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         setupAdapter()
         setUpObservers()
 
-        if (savedInstanceState == null)
-            viewModel.requestTopics()
+        if (savedInstanceState == null){
+            if (requireContext().isConnected()) {
+                viewModel.requestTopics()
+            } else {
+                showSnackbar("No Connection")
+            }
+        }
     }
 
 
@@ -47,7 +54,7 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         })
 
         viewModel.getLoading().observe(viewLifecycleOwner, Observer {
-            showLoading(it)
+            binding.swipeRefresh.isRefreshing = it
         })
 
         viewModel.getMoreTopics().observe(viewLifecycleOwner, Observer {
@@ -57,6 +64,10 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         viewModel.getError().observe(viewLifecycleOwner, Observer {
             showError(it)
         })
+
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.requestTopics()
+        }
 
     }
 
@@ -74,13 +85,8 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         })
     }
 
-    private fun showError(exception: Throwable) {
-        // TODO: implement error
-        println("error")
-    }
-
-    private fun showLoading(show: Boolean) {
-        binding.progressBar.isVisible = show
+    private fun showError(error: String) {
+        showToast(error)
     }
 
     override fun onDestroy() {
@@ -89,8 +95,12 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
     }
 
     override fun onTopicClick(topic: Topic) {
-        val action = ListFragmentDirections.actionListFragmentToDetailFragment(topic)
-        view?.findNavController()?.navigate(action)
+        if (requireContext().isConnected()) {
+            val action = ListFragmentDirections.actionListFragmentToDetailFragment(topic)
+            view?.findNavController()?.navigate(action)
+        } else {
+            showSnackbar("No Connection")
+        }
     }
 
     fun isBottom(dy: Int, layoutManager: LinearLayoutManager): Boolean {
