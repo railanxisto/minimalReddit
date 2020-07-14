@@ -1,7 +1,6 @@
 package com.sample.reddit.ui.list
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import com.sample.reddit.model.*
 import com.sample.reddit.ui.main.MainViewModel
 import com.sample.reddit.ui.utils.BaseFragment
 import com.sample.reddit.ui.utils.isConnected
+import kotlinx.android.synthetic.main.list_fragment.*
 
 class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
     private var _binding: ListFragmentBinding? = null
@@ -54,7 +54,7 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
         })
 
         viewModel.getLoading().observe(viewLifecycleOwner, Observer {
-            showLoading(it)
+            binding.swipeRefresh.isRefreshing = it
         })
 
         viewModel.getMoreTopics().observe(viewLifecycleOwner, Observer {
@@ -64,6 +64,10 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
         viewModel.getError().observe(viewLifecycleOwner, Observer {
             showError(it)
         })
+
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.requestTopics()
+        }
 
     }
 
@@ -85,18 +89,18 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
         showToast(error)
     }
 
-    private fun showLoading(show: Boolean) {
-        binding.progressBar.isVisible = show
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
 
     override fun onTopicClick(topic: Topic) {
-        val action = ListFragmentDirections.actionListFragmentToDetailFragment(topic)
-        view?.findNavController()?.navigate(action)
+        if (requireContext().isConnected()) {
+            val action = ListFragmentDirections.actionListFragmentToDetailFragment(topic)
+            view?.findNavController()?.navigate(action)
+        } else {
+            showSnackbar("No Connection")
+        }
     }
 
     fun isBottom(dy: Int, layoutManager: LinearLayoutManager): Boolean {

@@ -38,18 +38,18 @@ class MainViewModel @Inject constructor(
 
     fun requestTopics() {
         loading.value = true
-        requestTopic(RequestParams()) {
+        requestTopicsFromApi(RequestParams()) {
             topics.postValue(it)
         }
     }
 
     fun requestMoreTopics() {
-        requestTopic(RequestParams(after = after)) {
+        requestTopicsFromApi(RequestParams(after = after)) {
             requestMoreTopics.postValue(it)
         }
     }
 
-    fun requestTopic(params: RequestParams, onSuccess: (List<DataChildren>) -> Unit) {
+    private fun requestTopicsFromApi(params: RequestParams, onSuccess: (List<DataChildren>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = redditRepository.getSubreddit(params)
             when (result) {
