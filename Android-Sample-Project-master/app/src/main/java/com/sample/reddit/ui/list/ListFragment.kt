@@ -4,15 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.sample.reddit.R
 import com.sample.reddit.databinding.ListFragmentBinding
 import com.sample.reddit.model.Topic
 import com.sample.reddit.ui.main.MainViewModel
 import com.sample.reddit.ui.utils.BaseFragment
+import com.sample.reddit.ui.utils.EndlessRecyclerViewScrollListener
+import com.sample.reddit.ui.utils.getRestErrorMessage
 import com.sample.reddit.ui.utils.isConnected
 
 class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
@@ -22,6 +25,13 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
 
     private val viewModel: MainViewModel by activityViewModels()
     private val adapter = ListAdapter(this)
+    private val layoutManager = LinearLayoutManager(activity)
+    private val endlessScroll by lazy {
+        EndlessRecyclerViewScrollListener(layoutManager) {
+            binding.progressBar.isVisible = true
+            viewModel.requestMoreTopics()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +51,7 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
             if (requireContext().isConnected()) {
                 viewModel.requestTopics()
             } else {
-                showSnackbar("No Connection")
+                showSnackbar(getString(R.string.error_no_connection))
             }
         }
     }
@@ -57,29 +67,23 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
 
         viewModel.getMoreTopics().observe(viewLifecycleOwner, Observer {
             adapter.updateTopics(it)
+            binding.progressBar.isVisible = false
         })
 
         viewModel.getError().observe(viewLifecycleOwner, Observer {
-            showError(it)
+            showError(it.getRestErrorMessage(requireContext()))
         })
 
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.requestTopics()
+            endlessScroll.resetState()
         }
     }
 
     private fun setupAdapter() {
-        val layoutManager = LinearLayoutManager(activity)
         binding.topicsRecyclerView.layoutManager = layoutManager
         binding.topicsRecyclerView.adapter = adapter
-        binding.topicsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (isBottom(dy, layoutManager)) {
-                    viewModel.requestMoreTopics()
-                }
-            }
-        })
+        binding.topicsRecyclerView.addOnScrollListener(endlessScroll)
     }
 
     private fun showError(error: String) {
@@ -96,16 +100,7 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
             val action = ListFragmentDirections.actionListFragmentToDetailFragment(topic)
             view?.findNavController()?.navigate(action)
         } else {
-            showSnackbar("No Connection")
+            showSnackbar(getString(R.string.error_no_connection))
         }
-    }
-
-    fun isBottom(dy: Int, layoutManager: LinearLayoutManager): Boolean {
-        if (dy > 0) {
-            if (layoutManager.childCount + layoutManager.findFirstVisibleItemPosition() >= layoutManager.itemCount) {
-                return true
-            }
-        }
-        return false
     }
 }
