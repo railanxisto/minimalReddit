@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sample.reddit.databinding.ListFragmentBinding
 import com.sample.reddit.model.*
 import com.sample.reddit.ui.main.MainViewModel
-import kotlinx.android.synthetic.main.list_fragment.*
 
 class ListFragment : Fragment(), ListAdapter.TopicClickListener {
     private var _binding: ListFragmentBinding? = null
@@ -36,8 +35,11 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         super.onActivityCreated(savedInstanceState)
         setupAdapter()
         setUpObservers()
-        viewModel.requestTopics()
+
+        if (savedInstanceState == null)
+            viewModel.requestTopics()
     }
+
 
     private fun setUpObservers() {
         viewModel.getTopics().observe(viewLifecycleOwner, Observer {
@@ -60,13 +62,12 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
 
     private fun setupAdapter() {
         val layoutManager = LinearLayoutManager(activity)
-        topicsRecyclerView.layoutManager = layoutManager
-        topicsRecyclerView.adapter = adapter
-        topicsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.topicsRecyclerView.layoutManager = layoutManager
+        binding.topicsRecyclerView.adapter = adapter
+        binding.topicsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (isBottom(dy, layoutManager)) {
-                    println("aqui bottom")
                     viewModel.requestMoreTopics()
                 }
             }

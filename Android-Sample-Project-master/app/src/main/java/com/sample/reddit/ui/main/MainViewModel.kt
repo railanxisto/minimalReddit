@@ -1,17 +1,16 @@
 package com.sample.reddit.ui.main
 
-import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sample.reddit.api.RedditRepository
-import com.sample.reddit.model.*
-import kotlinx.coroutines.Dispatchers
-import com.sample.reddit.utils.StateMachine
-import com.sample.reddit.utils.StateMachineEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import java.lang.Exception
+import com.sample.reddit.model.CommentsResponse
+import com.sample.reddit.model.DataChildren
+import com.sample.reddit.model.RequestParams
+import com.sample.reddit.model.Result
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
@@ -27,6 +26,14 @@ class MainViewModel @Inject constructor(
     private val loading = MutableLiveData<Boolean>()
 
     private val error = MutableLiveData<Exception>()
+
+    @ExperimentalCoroutinesApi
+    private val _state = MutableStateFlow<Result<List<CommentsResponse>>>(
+        Result.Loading
+    )
+
+    @ExperimentalCoroutinesApi
+    val state: StateFlow<Result<List<CommentsResponse>>> get() = _state
 
     fun requestTopics() {
         loading.value = true
@@ -48,7 +55,6 @@ class MainViewModel @Inject constructor(
                 is Result.Success -> {
                     after = result.content.data?.after ?: after
                     onSuccess(result.content.data?.children!!)
-                    val mainThread = Looper.myLooper() == Looper.getMainLooper()
                     loading.postValue(false)
                 }
                 is Result.Error -> {
@@ -58,10 +64,15 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun requestComments(id: String): Flow<StateMachineEvent<Result<List<CommentsResponse>>>> =
-        StateMachine(Dispatchers.IO) {
-            redditRepository.getComments(id)
+    @ExperimentalCoroutinesApi
+    fun requestComments(id: String) {
+        viewModelScope.launch {
+            _state.value = Result.Loading
+            _state.value = withContext(Dispatchers.IO) {
+                redditRepository.getComments(id)
+            }
         }
+    }
 
     fun getTopics() = topics
 

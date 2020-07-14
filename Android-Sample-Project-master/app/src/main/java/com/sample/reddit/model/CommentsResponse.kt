@@ -23,5 +23,6 @@ data class Comment(
     val title: String?,
     val body: String?,
     val author: String? = null,
-    val score: Int = 0
+    val score: Int = 0,
+    @Json(name="url_overridden_by_dest") val image: String? = null
 ) : Serializable

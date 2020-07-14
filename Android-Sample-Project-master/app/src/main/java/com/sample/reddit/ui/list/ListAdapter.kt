@@ -27,7 +27,7 @@ class ListAdapter(
     override fun onBindViewHolder(holder: TopicsViewHolder, position: Int) {
         topics[position].run {
             holder.setTopic(this.topic!!)
-            holder.setShareButtonClickListener {
+            holder.setTopiButtonClickListener {
                 listener.onTopicClick(this.topic)
             }
         }
@@ -53,10 +53,11 @@ class ListAdapter(
                 itemView.topicImageView.load(topic.thumbnail)
             }
             itemView.titleTextView.text = topic.title
+            // TODO: Use resources.string
             itemView.commentsTextView.text = "${topic.comments.toString()} comments"
         }
 
-        fun setShareButtonClickListener(clickListener: () -> Unit) {
+        fun setTopiButtonClickListener(clickListener: () -> Unit) {
             itemView.setOnClickListener {
                 clickListener()
             }
