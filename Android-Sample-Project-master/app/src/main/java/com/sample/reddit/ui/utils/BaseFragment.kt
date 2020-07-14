@@ -10,5 +10,5 @@ open class BaseFragment : Fragment() {
         Snackbar.make(this.requireView().rootView, message, Snackbar.LENGTH_LONG).show()
 
     fun showToast(message: String) =
-        Toast.makeText(context,  message, Toast.LENGTH_LONG).show()
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }

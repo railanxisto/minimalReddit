@@ -15,7 +15,7 @@ interface RedditRepository {
 class RedditRepositoryImpl @Inject constructor(val apiService: RedditService) : RedditRepository {
     override suspend fun getSubreddit(params: RequestParams): Result<ApiResponse> {
         return try {
-            Result.Success(apiService.requestSubreddit(params.limit,  params.after))
+            Result.Success(apiService.requestSubreddit(params.limit, params.after))
         } catch (e: Exception) {
             Result.Error(e)
         }

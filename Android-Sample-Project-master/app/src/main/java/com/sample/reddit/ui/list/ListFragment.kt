@@ -4,18 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sample.reddit.databinding.ListFragmentBinding
-import com.sample.reddit.model.*
+import com.sample.reddit.model.Topic
 import com.sample.reddit.ui.main.MainViewModel
 import com.sample.reddit.ui.utils.BaseFragment
 import com.sample.reddit.ui.utils.isConnected
-import kotlinx.android.synthetic.main.list_fragment.*
 
 class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
     private var _binding: ListFragmentBinding? = null
@@ -26,7 +24,8 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
     private val adapter = ListAdapter(this)
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = ListFragmentBinding.inflate(layoutInflater)
@@ -38,7 +37,7 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
         setupAdapter()
         setUpObservers()
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             if (requireContext().isConnected()) {
                 viewModel.requestTopics()
             } else {
@@ -46,7 +45,6 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
             }
         }
     }
-
 
     private fun setUpObservers() {
         viewModel.getTopics().observe(viewLifecycleOwner, Observer {
@@ -68,7 +66,6 @@ class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.requestTopics()
         }
-
     }
 
     private fun setupAdapter() {
