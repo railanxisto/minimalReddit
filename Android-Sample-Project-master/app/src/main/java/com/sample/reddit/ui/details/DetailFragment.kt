@@ -79,7 +79,7 @@ class DetailFragment : BaseFragment() {
 
     private fun showError(error: Throwable) {
         showLoading(false)
-        showToast(error.getRestErrorMessage())
+        showToast(error.getRestErrorMessage(requireContext()))
     }
 
     private fun showSuccess(result: List<CommentsResponse>) {

@@ -1,19 +1,22 @@
 package com.sample.reddit.ui.utils
 
+import android.content.Context
+import com.sample.reddit.R
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-fun Throwable.getRestErrorMessage(): String =
+fun Throwable.getRestErrorMessage(context: Context): String =
     when (this) {
+        // TODO: Improve error messages
         is HttpException -> {
             when (code()) {
-                in 400..499 -> "Some app error occurred"
-                in 500..599 -> "Some server error occurred"
-                else -> "An unexpected error ocurred"
+                in 400..499 -> context.getString(R.string.error_app)
+                in 500..599 -> context.getString(R.string.error_server)
+                else -> context.getString(R.string.error_unknown)
             }
         }
         is UnknownHostException, is SocketTimeoutException ->
-            "Network problem. Check your conectivity and try again!"
-        else -> "An unexpected error ocurred"
+            context.getString(R.string.error_network)
+        else -> context.getString(R.string.error_unknown)
     }
