@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sample.reddit.databinding.ListFragmentBinding
 import com.sample.reddit.model.*
 import com.sample.reddit.ui.main.MainViewModel
+import com.sample.reddit.ui.utils.BaseFragment
+import com.sample.reddit.ui.utils.isConnected
 
-class ListFragment : Fragment(), ListAdapter.TopicClickListener {
+class ListFragment : BaseFragment(), ListAdapter.TopicClickListener {
     private var _binding: ListFragmentBinding? = null
     private val binding: ListFragmentBinding
         get() = _binding!!
@@ -36,8 +38,13 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         setupAdapter()
         setUpObservers()
 
-        if (savedInstanceState == null)
-            viewModel.requestTopics()
+        if (savedInstanceState == null){
+            if (requireContext().isConnected()) {
+                viewModel.requestTopics()
+            } else {
+                showSnackbar("No Connection")
+            }
+        }
     }
 
 
@@ -74,9 +81,8 @@ class ListFragment : Fragment(), ListAdapter.TopicClickListener {
         })
     }
 
-    private fun showError(exception: Throwable) {
-        // TODO: implement error
-        println("error")
+    private fun showError(error: String) {
+        showToast(error)
     }
 
     private fun showLoading(show: Boolean) {

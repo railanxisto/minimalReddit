@@ -8,6 +8,7 @@ import com.sample.reddit.model.CommentsResponse
 import com.sample.reddit.model.DataChildren
 import com.sample.reddit.model.RequestParams
 import com.sample.reddit.model.Result
+import com.sample.reddit.ui.utils.getRestErrorMessage
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,7 @@ class MainViewModel @Inject constructor(
 
     private val loading = MutableLiveData<Boolean>()
 
-    private val error = MutableLiveData<Exception>()
+    private val errorMessage = MutableLiveData<String>()
 
     @ExperimentalCoroutinesApi
     private val _state = MutableStateFlow<Result<List<CommentsResponse>>>(
@@ -58,7 +59,8 @@ class MainViewModel @Inject constructor(
                     loading.postValue(false)
                 }
                 is Result.Error -> {
-                    error.value = result.error
+                    loading.postValue(false)
+                    errorMessage.postValue(result.error.getRestErrorMessage())
                 }
             }
         }
@@ -80,6 +82,6 @@ class MainViewModel @Inject constructor(
 
     fun getMoreTopics() = requestMoreTopics
 
-    fun getError() = error
+    fun getError() = errorMessage
 
 }

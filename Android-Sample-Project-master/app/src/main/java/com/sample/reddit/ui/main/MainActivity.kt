@@ -2,9 +2,11 @@ package com.sample.reddit.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.google.android.material.snackbar.Snackbar
 import com.sample.reddit.R
 import com.sample.reddit.databinding.MainActivityBinding
 import com.sample.reddit.di.ComponentProvider
